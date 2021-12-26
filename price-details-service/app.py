@@ -11,9 +11,9 @@ def main():
     return 'hello world'
 
 
-@app.route('/price-list')
-def all_apartments():
-    apartments = get_price_list_from_db()
+@app.route('/price-list/<int:page>')
+def all_apartments(page: int = 1):
+    apartments = get_price_list_from_db(page)
     return {'price_list': apartments}
 
 
