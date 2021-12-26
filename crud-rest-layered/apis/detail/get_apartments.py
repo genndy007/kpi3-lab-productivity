@@ -42,7 +42,13 @@ class DetailAPI:
         apa_details = self.get_apartments_details(ids)
         return apa_details
 
+    def get_apartments_by_page(self, page: int):
+        url = f'http://localhost:{self.PORT}/price-list/{page}'
+        resp = requests.get(url)
+        data = resp.json()
+        return data['price_list']
+
 
 if __name__ == "__main__":
     detail = DetailAPI()
-    print(detail.get_apartments_by_params())
+    print(detail.get_apartments_by_page(2))
