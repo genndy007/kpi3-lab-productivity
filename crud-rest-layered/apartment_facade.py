@@ -4,8 +4,12 @@ from filtering import City, FloorNum, RoomAmt, MinSquareAmt, MaxSquareAmt, MinCo
 from database import DB
 from apis.detail.get_apartments import DetailAPI
 from apis.search.get_apartments import SearchAPI
+from caching import Cache
+import time
 
 table_name = 'apartment'
+
+cache = Cache()
 
 
 class ApartmentFacade:
@@ -71,18 +75,27 @@ class ApartmentFacade:
         return apas
 
     def get_apartments(self, request):
+        if (time.time() % 86400) == 0:  # midnight
+            cache.clear()
+
         args = request.args
 
         all_results = []
+
         rows_native_db = self.__get_from_native_db(args)
-        rows_detail = self.__get_from_detail(args)
-        rows_search = self.__get_from_search(args)
+
+        if cache.is_empty():
+            rows_detail = self.__get_from_detail(args)
+            rows_search = self.__get_from_search(args)
+
+            for row in rows_detail:
+                cache.add(row)
+            for row in rows_search:
+                cache.add(row)
 
         for row in rows_native_db:
             all_results.append(row)
-        for row in rows_detail:
-            all_results.append(row)
-        for row in rows_search:
+        for row in cache.cache:
             all_results.append(row)
 
         return all_results
