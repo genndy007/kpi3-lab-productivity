@@ -48,7 +48,23 @@ class DetailAPI:
         data = resp.json()
         return data['price_list']
 
+    def get_all_apartments_by_page(self):
+        page = 1
+        all_apas = []
+        while True:
+            apas = self.get_apartments_by_page(page)
+            if not apas:
+                break
+
+            for apa in apas:
+                all_apas.append(apa)
+
+            page += 1
+
+        return all_apas
+
 
 if __name__ == "__main__":
     detail = DetailAPI()
-    print(detail.get_apartments_by_page(2))
+    all_apas = detail.get_all_apartments_by_page()
+    print(all_apas[-1])
