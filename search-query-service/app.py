@@ -13,8 +13,8 @@ def main():
     return 'hello world'
 
 
-MIN_RESP_TIME = 0
-MAX_RESP_TIME = 0
+MIN_RESP_TIME = 10
+MAX_RESP_TIME = 20
 
 
 @app.route('/search')
