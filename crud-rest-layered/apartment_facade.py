@@ -12,7 +12,6 @@ class ApartmentFacade:
     def __init__(self) -> None:
         self.db = DB.Instance()
 
-
     def __get_from_native_db(self, args):
         db_request = ApartmentRequest(table_name)
         if city := args.get('city'):
@@ -39,10 +38,9 @@ class ApartmentFacade:
 
         return [list(row) for row in rows]
 
-
     def __get_from_detail(self, args: dict):
         detail = DetailAPI()
-        all_apas = detail.get_apartments_by_params()
+        all_apas = detail.get_all_apartments_by_page()
 
         spec = True
         if city := args.get('city'):
@@ -67,12 +65,10 @@ class ApartmentFacade:
 
         return filtered_apas
 
-
     def __get_from_search(self, args):
         search = SearchAPI()
         apas = search.get_apartments_by_params(args)
         return apas
-
 
     def get_apartments(self, request):
         args = request.args
@@ -82,7 +78,6 @@ class ApartmentFacade:
         rows_detail = self.__get_from_detail(args)
         rows_search = self.__get_from_search(args)
 
-
         for row in rows_native_db:
             all_results.append(row)
         for row in rows_detail:
@@ -91,7 +86,6 @@ class ApartmentFacade:
             all_results.append(row)
 
         return all_results
-
 
     def add_apartment(self, request):
         apa = request.json
@@ -117,8 +111,6 @@ class ApartmentFacade:
         self.db.conn.commit()
 
         return id_of_new_row
-
-
 
     def update_apartment(self, request):
         apa = request.json
@@ -153,7 +145,6 @@ class ApartmentFacade:
 
         return id_of_new_row
 
-
     def remove_apartment(self, request):
         apa = request.json
 
@@ -177,4 +168,4 @@ class ApartmentFacade:
 if __name__ == '__main__':
     facade = ApartmentFacade()
     res = facade.get_apartments({'room_amt': 3})
-    print(res)
+    print(res[-1])
