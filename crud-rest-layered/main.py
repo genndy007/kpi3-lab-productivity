@@ -2,7 +2,6 @@ from flask import Flask, request
 from request_handling import GETHandler, POSTHandler, PATCHHandler, DELETEHandler
 
 
-
 app = Flask(__name__)
 
 
