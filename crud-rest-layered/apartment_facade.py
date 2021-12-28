@@ -1,4 +1,5 @@
 # facade
+import datetime
 from apartment_request import ApartmentRequest
 from filtering import City, FloorNum, RoomAmt, MinSquareAmt, MaxSquareAmt, MinCost, MaxCost
 from database import DB
@@ -15,6 +16,7 @@ cache = Cache()
 class ApartmentFacade:
     def __init__(self) -> None:
         self.db = DB.Instance()
+        self.time_of_update = None
 
     def __get_from_native_db(self, args):
         db_request = ApartmentRequest(table_name)
@@ -75,7 +77,7 @@ class ApartmentFacade:
         return apas
 
     def get_apartments(self, request):
-        if (time.time() % 86400) == 0:  # midnight
+        if not self.time_of_update or (datetime.datetime.now() - self.time_of_update).days == 1:
             cache.clear()
 
         args = request.args
@@ -85,6 +87,7 @@ class ApartmentFacade:
         rows_native_db = self.__get_from_native_db(args)
 
         if cache.is_empty():
+            self.time_of_update = datetime.datetime.now()
             rows_detail = self.__get_from_detail(args)
             rows_search = self.__get_from_search(args)
 
